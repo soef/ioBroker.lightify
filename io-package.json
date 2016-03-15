@@ -1,0 +1,28 @@
+{
+  "common": {
+    "name": "lightify",
+    "version": "0.0.1",
+    "title": "OSRAM Lightify",
+    "desc": {
+      "en": "OSRAM Lightify Devices",
+      "de": "OSRAM Lightify Devices",
+      "ru": "OSRAM Lightify Devices"
+    },
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "lightify.png",
+    "extIcon": "https://raw.githubusercontent.com/soef/iobroker.lightify/master/admin/lightify.png",
+    "readme": "https://github.com/soef/iobroker.lightify/blob/master/README.md",
+    "loglevel": "info",
+    "type": "hardware"
+  },
+  "native": {
+    "ip": "",
+    "polling": true,
+    "intervall": 60
+  },
+  "instanceObjects": [
+  ],
+  "objects": [
+  ]
+}

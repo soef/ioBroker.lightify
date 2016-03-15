@@ -1,0 +1,37 @@
+{
+  "name": "iobroker.lightify",
+  "version": "0.0.1",
+  "description": "OSRAM Lightify Adapter",
+  "author": {
+    "name": "soef",
+    "email": "soef@gmx.net"
+  },
+  "contributors": [
+    {
+      "name": "soef",
+      "email": "soef@gmx.net"
+    }
+  ],
+  "homepage": "https://github.com/soef/iobroker.lightify",
+  "license": "MIT",
+  "keywords": [
+    "ioBroker",
+    "osram",
+    "lightify",
+    "zigbee",
+    "hue"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soef/iobroker.lightify"
+  },
+  "dependencies": {
+    "node-lightify": "^0.0.4"
+  },
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/soef/iobroker.lightify/issues"
+  },
+  "readmeFilename": "README.md",
+  "main": "lightify.js"
+}
