@@ -97,9 +97,15 @@ function stateChange(id, state) {
             lightify.node_temperature(mac, state.val >> 0, transitionTime);
             break;
         case 'command':
-            var v = state.val.replace(/red|green|blue|transition|bri|off/g, function(match) { return { red:'r', green:'g', blue:'b', transition:'x', bri:'l', off:'on:0'}[match] });
+            //var v = state.val.replace(/red|green|blue|transition|bri|off/g, function(match) { return { red:'r', green:'g', blue:'b', transition:'x', bri:'l', off:'on:0'}[match] });
+            var v = state.val.replace(/^on$|red|green|blue|transition|bri|off/g, function(match) { return { on:'on:1', red:'r', green:'g', blue:'b', transition:'x', bri:'l', off:'on:0'}[match] });
             v = v.replace(/\s|\"|;$|,$/g, '').replace(/=/g, ':').replace(/;/g, ',').replace(/true/g, 1).replace(/(r|g|b|x|l|sat|on|ct)/g, '"$1"').replace(/^\{?(.*?)\}?$/, '{$1}');
-            var colors = JSON.parse(v);
+            try {
+                var colors = JSON.parse(v);
+            } catch (e) {
+                adapter.log.error("on Command: " + e.message + ': state.val="' + state.val + '"');
+                return;
+            }
             if (!colors || typeof colors !== 'object') return;
             var o = fullExtend(aktStates(), colors);
             adapter.log.debug(JSON.stringify(o));
@@ -122,7 +128,7 @@ function stateChange(id, state) {
         default:
             return
     }
-    setTimeout(updateDevices, 300);
+    setTimeout(updateDevices, 800);
 }
 
 var usedStateNames = {
