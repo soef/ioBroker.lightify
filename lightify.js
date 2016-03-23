@@ -1,6 +1,5 @@
 ﻿"use strict";
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // patch node-lightify to get & set the mac-value as hex string
 
@@ -97,7 +96,6 @@ function stateChange(id, state) {
             lightify.node_temperature(mac, state.val >> 0, transitionTime);
             break;
         case 'command':
-            //var v = state.val.replace(/red|green|blue|transition|bri|off/g, function(match) { return { red:'r', green:'g', blue:'b', transition:'x', bri:'l', off:'on:0'}[match] });
             var v = state.val.replace(/^on$|red|green|blue|transition|bri|off/g, function(match) { return { on:'on:1', red:'r', green:'g', blue:'b', transition:'x', bri:'l', off:'on:0'}[match] });
             v = v.replace(/\s|\"|;$|,$/g, '').replace(/=/g, ':').replace(/;/g, ',').replace(/true/g, 1).replace(/(r|g|b|x|l|sat|on|ct)/g, '"$1"').replace(/^\{?(.*?)\}?$/, '{$1}');
             try {
@@ -205,11 +203,28 @@ function poll() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function main() {
-
+var maxTries = 5;
+var startTimer = null;
+function start() {
+    if (maxTries-- <= 0) {
+        return;
+    }
+    startTimer = setTimeout(start, 500);
     lightify.start(adapter.config.ip).then(function(data){
+        if (startTimer) {
+            clearTimeout(startTimer);
+        }
         createAll(poll);
     });
+}
+
+
+function main() {
+
+    start();
+    //lightify.start(adapter.config.ip).then(function(data){
+    //    createAll(poll);
+    //});
 
     adapter.subscribeStates('*');
 }
