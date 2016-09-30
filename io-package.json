@@ -8,13 +8,21 @@
       "de": "OSRAM Lightify Devices",
       "ru": "OSRAM Lightify Devices"
     },
+    "keywords": [
+      "ioBroker",
+      "osram",
+      "lightify",
+      "zigbee",
+      "hue"
+    ],
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "icon": "lightify.png",
     "extIcon": "https://raw.githubusercontent.com/soef/iobroker.lightify/master/admin/lightify.png",
     "readme": "https://github.com/soef/iobroker.lightify/blob/master/README.md",
     "loglevel": "info",
-    "type": "hardware"
+    "type": "hardware",
+    "enabled": true
   },
   "native": {
     "ip": "",

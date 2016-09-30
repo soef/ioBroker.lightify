@@ -62,11 +62,11 @@ function stateChange(id, state) {
     var deviceName = ar[2], stateName = ar[3];
     var o = devices.get(deviceName);
     if (o === undefined || o.native === undefined || !o.native.mac) {
-        adapter.log("Unknown device " + deviceName);
+        adapter.log.error("Unknown device " + deviceName);
         return;
     }
     var mac = o.native.mac;
-    var transitionTime = getState(dcs(deviceName, 'tans')) || 3;
+    var transitionTime = getState(dcs(deviceName, 'trans')) || 3;
 
     function aktStates() {
         return {
@@ -86,6 +86,14 @@ function stateChange(id, state) {
         case 'b':
         case 'sat':
             var colors = aktStates();
+            if (typeof state.val == 'string' && state.val[0] == '#') {
+                colors.r = parseInt(state.val.substr(1, 2), 16);
+                colors.g = parseInt(state.val.substr(3, 2), 16);
+                colors.b = parseInt(state.val.substr(5, 2), 16);
+                if (state.val.length > 7) colors.sat = parseInt(state.val.substr(7, 2), 16);
+                lightify.node_color(mac, colors.r, colors.g, colors.b, colors.sat, transitionTime);
+                break;
+            }
             colors[stateName] = state.val >> 0;
             lightify.node_color(mac, colors.r, colors.g, colors.b, colors.sat, transitionTime);
             break;
@@ -130,46 +138,54 @@ function stateChange(id, state) {
 }
 
 var usedStateNames = {
-    type:        { n: 'type',      val: 0, common: { min: 0, max: 255, write: false }},
-    online:      { n: 'reachable', val: 0, common: { write: false }},
-    //groupid:     { n: 'groupid',   val: 0, common: { write: false }},
-    status:      { n: 'on',        val: false, common: { min: false, max: true }},
-    brightness:  { n: 'bri',       val: 0, common: { min: 0, max: 100 }},
-//    temperature: { n: 'ct',        val: 0, common: { min: 0, max: 5000 }},
-    red:         { n: 'r',         val: 0, common: { min: 0, max: 255 }},
-    green:       { n: 'g',         val: 0, common: { min: 0, max: 255 }},
-    blue:        { n: 'b',         val: 0, common: { min: 0, max: 255 }},
-    alpha:       { n: 'sat',       val: 0, common: { min: 0, max: 255 }},
-    transition:  { n: 'trans',     val: 3 },
+    type:        { n: 'type',      g:1, val: 0, common: { min: 0, max: 255, write: false }},
+    online:      { n: 'reachable', g:1, val: 0, common: { write: false }},
+    groupid:     { n: 'groupid',   g:1, val: 0, common: { write: false }},
+    status:      { n: 'on',        g:3, val: false, common: { min: false, max: true }},
+    brightness:  { n: 'bri',       g:1, val: 0, common: { min: 0, max: 100, unit: '%', desc: '0..100%' }},
+    temperature: { n: 'ct',        g:1, val: 0, common: { min: 0, max: 8000, unit: '°K', desc: 'in °Kelvin 0..8000' }},
+    red:         { n: 'r',         g:1, val: 0, common: { min: 0, max: 255 }},
+    green:       { n: 'g',         g:1, val: 0, common: { min: 0, max: 255 }},
+    blue:        { n: 'b',         g:1, val: 0, common: { min: 0, max: 255 }},
+    alpha:       { n: 'sat',       g:1, val: 0, common: { min: 0, max: 255 }},
+    transition:  { n: 'trans',     g:1, val: 30,common: { unit: '\u2152 s', desc: 'in 10th seconds'} },
 
     command:     { n: 'command',   val: 'r:0, g:0, b:0, sat:255, on:true, transition:20' }
 };
 
-
+const LIGHT_GROUP_ROLE = 'LightGroup';
 function createAll (callback) {
 
     var dev = new devices.CDevice(0, '');
 
     function create(data, role) {
+        var g = role == LIGHT_GROUP_ROLE ?  2 : 1;
         for (var i = 0; i < data.result.length; i++) {
             var device = data.result[i];
             dev.setDevice(device.name, {common: {name: device.name, role: role}, native: { mac: device.mac, groups: device.groupid } });
             for (var j in usedStateNames) {
-                var st = Object.assign({}, usedStateNames[j]);
-                dev.set(st.n, st);
+                if (usedStateNames[j].g & g) {
+                    var st = Object.assign({}, usedStateNames[j]);
+                    dev.createNew(st.n, st);
+                }
             }
         }
     }
 
     lightify.discovery().then(function(data) {
         create(data, 'light.color');
-        create( {result: [ {mac: 'ffffffffffffffff', name: 'All'}] }, 'LightGroup');
+        create( {result: [ {mac: 'ffffffffffffffff', name: 'All'}] }, LIGHT_GROUP_ROLE);
         lightify.zone_discovery().then(function (data) {
             //dev.setDevice('Groups', {common: {name: 'Groups', role: 'Groups'}});
             //for (var i = 0; i < data.result.length; i++) {
             //    var device = data.result[i];
             //    dev.set(device.name, device.id);
             //}
+
+            //for (var i=0; i<data.result.length; i++) {
+            //    data.result[i].mac = 'G.' + data.result[i].id;
+            //}
+            //create(data, LIGHT_GROUP_ROLE);
             devices.update(callback);
         })
     });
@@ -177,18 +193,27 @@ function createAll (callback) {
 
 
 function updateDevices () {
-    lightify.discovery().then(function(data) {
+
+    function update(data, g) {
         var dev = new devices.CDevice(0, '');
         for (var i = 0; i < data.result.length; i++) {
             var device = data.result[i];
+            if (device.status != undefined) device.status = !!device.status;
             dev.setDevice(device.name, {common: {name: device.name}});
             for (var j in usedStateNames) {
-                if (device[j] !== undefined) {
+                if (usedStateNames[j].g & g && device[j] !== undefined) {
                     dev.set(usedStateNames[j].n, device[j]);
                 }
             }
         }
         dev.update();
+    }
+
+    lightify.discovery().then(function(data) {
+        update(data, 1);
+        //lightify.zone_discovery().then(function(data) {
+        //    update(data, 2);
+        //});
     });
 }
 
@@ -199,6 +224,73 @@ function poll() {
     }
     updateDevices();
     setTimeout(poll, adapter.config.intervall*1000);
+}
+
+
+function checkIP(callback) {
+    if (adapter.config.ip) {
+        callback();
+        return;
+    }
+
+    function saveFoundIP(ip, callback) {
+        adapter.getForeignObject("system.adapter." + adapter.namespace, function (err, obj) {
+            obj.native.ip = ip;
+            adapter.setForeignObject(obj._id, obj, {}, function (err, obj) {
+                adapter.config.ip = ip;
+                callback();
+            });
+        });
+    }
+
+    function getIPAddresses() {
+        // found on stackoverflow
+        var ips = [];
+        var interfaces = require('os').networkInterfaces();
+        for (var devName in interfaces) {
+            var iface = interfaces[devName];
+
+            for (var i = 0; i < iface.length; i++) {
+                var alias = iface[i];
+                if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal)
+                    ips.push(alias.address);
+            }
+        }
+        return ips;
+    }
+
+    adapter.log.info('No IP configurated, trying to find a gateway...');
+    var ips = getIPAddresses();
+    if (ips.length <= 0) {
+        return;
+    }
+
+    var net = require('net');
+
+    function tryIp(ip, cb) {
+        var client = new net.Socket();
+        client.setTimeout(1000, function() {
+            client.destroy();
+        });
+        client.on('data', function(data) {
+        });
+        client.on('connect', function() {
+            client.end();
+            cb(ip);
+        });
+        client.connect(4000, ip, function() {
+        });
+    }
+
+    ips.forEach(function (ownip) {
+        var prefixIP = ownip.split('.', 3).join('.') + '.';
+        adapter.log.info('Own IP: ' + ownip + ' Range: ' + prefixIP + '1...255');
+        for (var i = 0; i < 255; i++) {
+            tryIp(prefixIP + i, function (foundIp) {
+                saveFoundIP(foundIp, callback);
+            });
+        }
+    });
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,12 +312,9 @@ function start() {
 
 
 function main() {
-
-    start();
-    //lightify.start(adapter.config.ip).then(function(data){
-    //    createAll(poll);
-    //});
-
-    adapter.subscribeStates('*');
+    checkIP (function() {
+        start();
+        adapter.subscribeStates('*');
+    });
 }
 
