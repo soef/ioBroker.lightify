@@ -150,7 +150,7 @@ var usedStateNames = {
     alpha:       { n: 'sat',       g:1, val: 0, common: { min: 0, max: 255 }},
     transition:  { n: 'trans',     g:1, val: 30,common: { unit: '\u2152 s', desc: 'in 10th seconds'} },
 
-    command:     { n: 'command',   val: 'r:0, g:0, b:0, sat:255, on:true, transition:20' }
+    command:     { n: 'command',   g:1, val: 'r:0, g:0, b:0, sat:255, on:true, transition:20' }
 };
 
 const LIGHT_GROUP_ROLE = 'LightGroup';
