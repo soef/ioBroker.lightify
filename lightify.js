@@ -11,43 +11,57 @@ Buffer.prototype.readDoubleLE = function (pos, len) {
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var utils = require(__dirname + '/lib/utils'),
-    soef = require(__dirname + '/lib/soef'),
-    devices = new soef.Devices();
-
+var soef = require('soef');
 var lightify = require('node-lightify');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var adapter = utils.adapter({
-    name: 'lightify',
-    
-    unload: function (callback) {
-        try {
-            callback();
-        } catch (e) {
-            callback();
+var adapter = soef.Adapter (
+    main,
+    onStateChange,
+    {
+        name: 'lightify',
+        //discover: function (callback) {
+        //},
+        //install: function (callback) {
+        //},
+        uninstall: function (callback) {
         }
-    },
-    discover: function (callback) {
-    },
-    install: function (callback) {
-    },
-    uninstall: function (callback) {
-    },
-    objectChange: function (id, obj) {
-    },
-    stateChange: function (id, state) {
-        if (state && !state.ack) {
-            stateChange(id, state);
-        }
-    },
-    ready: function () {
-        devices.init(adapter, function(err) {
-            main();
-        });
+        //objectChange: function (id, obj) {
+        //}
     }
-});
+);
+
+//var adapter = utils.adapter({
+//    name: 'lightify',
+//
+//    unload: function (callback) {
+//        try {
+//            callback();
+//        } catch (e) {
+//            callback();
+//        }
+//    },
+//    //discover: function (callback) {
+//    //},
+//    //install: function (callback) {
+//    //},
+//    uninstall: function (callback) {
+//    },
+//    objectChange: function (id, obj) {
+//    },
+//    stateChange: function (id, state) {
+//        if (state && !state.ack) {
+//            onStateChange(id, state);
+//        }
+//    },
+//    ready: function () {
+//        soef.main(adapter, main);
+//        //devices.init(adapter, function(err) {
+//        //    main();
+//        //});
+//    }
+//});
 
 function getState(id, state) {
     //var s = id.replace(/\w+$/, state);
@@ -57,7 +71,17 @@ function getState(id, state) {
     return o.val || 0;
 }
 
-function stateChange(id, state) {
+function parseHexColor(val) {
+    var co = {
+        r: parseInt(val.substr(1, 2), 16),
+        g: parseInt(val.substr(3, 2), 16) || 0,
+        b: parseInt(val.substr(5, 2), 16) || 0,
+        w: val.length > 7 ? parseInt(val.substr(7, 2), 16) : undefined
+    };
+    return co;
+}
+
+function onStateChange(id, state) {
     var ar = id.split('.');
     var deviceName = ar[2], stateName = ar[3];
     var o = devices.get(deviceName);
@@ -104,14 +128,20 @@ function stateChange(id, state) {
             lightify.node_temperature(mac, state.val >> 0, transitionTime);
             break;
         case 'command':
-            var v = state.val.replace(/^on$|red|green|blue|transition|bri|off/g, function(match) { return { on:'on:1', red:'r', green:'g', blue:'b', transition:'x', bri:'l', off:'on:0'}[match] });
-            v = v.replace(/\s|\"|;$|,$/g, '').replace(/=/g, ':').replace(/;/g, ',').replace(/true/g, 1).replace(/(r|g|b|x|l|sat|on|ct)/g, '"$1"').replace(/^\{?(.*?)\}?$/, '{$1}');
+            var v = state.val.replace(/^on$|red|green|blue|transition|bri|off|#/g, function(match) { return { '#': '#', of:'off:1', on:'on:1', red:'r', green:'g', blue:'b', white: 'w', transition:'x', bri:'l', off:'on:0'}[match] });
+            v = v.replace(/\s|\"|;$|,$/g, '').replace(/=/g, ':').replace(/;/g, ',').replace(/true/g, 1).replace(/#((\d|[a-f]|[A-F])*)/g, 'h:"$1"').replace(/(r|g|b|w|x|l|sat|of|on|ct|h)/g, '"$1"').replace(/^\{?(.*?)\}?$/, '{$1}');
             try {
                 var colors = JSON.parse(v);
             } catch (e) {
                 adapter.log.error("on Command: " + e.message + ': state.val="' + state.val + '"');
                 return;
             }
+            if (colors.h) {
+                var co = parseHexColor('#'+colors.h);
+                colors.r = co.r; colors.g = co.g; colors.b = co.b;
+                delete colors.h;
+            }
+
             if (!colors || typeof colors !== 'object') return;
             var o = fullExtend(aktStates(), colors);
             adapter.log.debug(JSON.stringify(o));
@@ -273,6 +303,8 @@ function checkIP(callback) {
             client.destroy();
         });
         client.on('data', function(data) {
+        });
+        client.on('error', function(data) {
         });
         client.on('connect', function() {
             client.end();
