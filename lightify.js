@@ -4,64 +4,45 @@
 // patch node-lightify to get & set the mac-value as hex string
 
 Buffer.prototype.writeDoubleLE = function (val, pos) {
-    return this.write(val, 0, 8, 'hex');
+    return this.write(val.toLowerCase(), 0, 8, 'hex');
 };
 Buffer.prototype.readDoubleLE = function (pos, len) {
-    return this.toString('hex', pos, pos+len);
+    return this.toString('hex', pos, pos+len).toUpperCase();
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var soef = require('soef');
-var lightify = require('node-lightify');
+//var lightify = require('node-lightify');
+var lightify = require('node-lightify-soef');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var adapter = soef.Adapter (
     main,
     onStateChange,
+    onUnload,
+    onUpdate,
     {
         name: 'lightify',
-        //discover: function (callback) {
-        //},
-        //install: function (callback) {
-        //},
-        uninstall: function (callback) {
-        }
-        //objectChange: function (id, obj) {
-        //}
     }
 );
 
-//var adapter = utils.adapter({
-//    name: 'lightify',
-//
-//    unload: function (callback) {
-//        try {
-//            callback();
-//        } catch (e) {
-//            callback();
-//        }
-//    },
-//    //discover: function (callback) {
-//    //},
-//    //install: function (callback) {
-//    //},
-//    uninstall: function (callback) {
-//    },
-//    objectChange: function (id, obj) {
-//    },
-//    stateChange: function (id, state) {
-//        if (state && !state.ack) {
-//            onStateChange(id, state);
-//        }
-//    },
-//    ready: function () {
-//        soef.main(adapter, main);
-//        //devices.init(adapter, function(err) {
-//        //    main();
-//        //});
-//    }
-//});
+function onUnload(callback) {
+    //close socket in node-lightify
+    if (lightify && lightify.close) {
+        lightify.close();
+    }
+    callback();
+}
+
+
+function onUpdate(oldVersion, newVersion, callback) {
+    if(oldVersion < 18) {
+        removeAllObjects(adapter, callback);
+        return;
+    }
+    callback();
+}
 
 function getState(id, state) {
     //var s = id.replace(/\w+$/, state);
@@ -71,13 +52,26 @@ function getState(id, state) {
     return o.val || 0;
 }
 
-function parseHexColor(val) {
+function parseHexColors(val) {
+    val = val.toString();
+    var ar = val.split('.');
+    if (ar && ar.length > 1) val = ar[0];
+    if (val[0] === '#') val = val.substr(1);
     var co = {
-        r: parseInt(val.substr(1, 2), 16),
-        g: parseInt(val.substr(3, 2), 16) || 0,
-        b: parseInt(val.substr(5, 2), 16) || 0,
-        w: val.length > 7 ? parseInt(val.substr(7, 2), 16) : undefined
+        r: parseInt(val.substr(0, 2), 16),
+        g: parseInt(val.substr(2, 2), 16) || 0,
+        b: parseInt(val.substr(4, 2), 16) || 0 //,
     };
+    if (val.length > 7) {
+        co.w = parseInt(val.substr(6, 2), 16);
+    }
+    if (ar && ar.length > 1) {
+        var m = Number('.' + ar[1]);
+        for (var i in co) {
+            co[i] *= m;
+        }
+        roundRGB(co);
+    }
     return co;
 }
 
@@ -101,26 +95,54 @@ function onStateChange(id, state) {
         };
     }
 
+    devices.invalidate(id);
     switch (stateName) {
+        case usedStateNames.transition.n:
+            devices.setrawval(id, state.val);
+            break;
+        case 'refresh':
+            updateDevices(mac);
+            break;
+        case 'rgbw':
+        case 'rgb':
+            var colors = parseHexColors(state.val);
+            colors.sat = colors.w != undefined ? colors.w : getState(dcs(deviceName, 'sat'))
+            lightify.node_color(mac, colors.r, colors.g, colors.b, colors.sat, transitionTime);
+            break;
+
         case 'on':
             lightify.node_on_off(mac, state.val >> 0 ? true : false);
+            //lightify.node_soft_on_off(mac, state.val >> 0 ? true : false, 200);
             break;
         case 'r':
         case 'g':
         case 'b':
         case 'sat':
-            var colors = aktStates();
+            //var colors = aktStates();
+            //if (typeof state.val == 'string' && state.val[0] == '#') {
+            //    colors.r = parseInt(state.val.substr(1, 2), 16);
+            //    colors.g = parseInt(state.val.substr(3, 2), 16);
+            //    colors.b = parseInt(state.val.substr(5, 2), 16);
+            //    if (state.val.length > 7) colors.sat = parseInt(state.val.substr(7, 2), 16);
+            //    lightify.node_color(mac, colors.r, colors.g, colors.b, colors.sat, transitionTime);
+            //    break;
+            //}
+            //colors[stateName] = state.val >> 0;
+            //lightify.node_color(mac, colors.r, colors.g, colors.b, colors.sat, transitionTime);
+            //break;
+
+            var colors;
             if (typeof state.val == 'string' && state.val[0] == '#') {
-                colors.r = parseInt(state.val.substr(1, 2), 16);
-                colors.g = parseInt(state.val.substr(3, 2), 16);
-                colors.b = parseInt(state.val.substr(5, 2), 16);
-                if (state.val.length > 7) colors.sat = parseInt(state.val.substr(7, 2), 16);
-                lightify.node_color(mac, colors.r, colors.g, colors.b, colors.sat, transitionTime);
-                break;
+                colors = parseHexColors(state.val);
+                colors.sat = colors.w != undefined ? colors.w : getState(dcs(deviceName, 'sat'))
+            } else {
+                colors = aktStates();
+                colors[stateName] = state.val >> 0;
             }
-            colors[stateName] = state.val >> 0;
             lightify.node_color(mac, colors.r, colors.g, colors.b, colors.sat, transitionTime);
             break;
+
+
         case 'bri':
             lightify.node_brightness(mac, state.val >> 0, transitionTime);
             break;
@@ -137,7 +159,7 @@ function onStateChange(id, state) {
                 return;
             }
             if (colors.h) {
-                var co = parseHexColor('#'+colors.h);
+                var co = parseHexColors('#'+colors.h);
                 colors.r = co.r; colors.g = co.g; colors.b = co.b;
                 delete colors.h;
             }
@@ -164,37 +186,45 @@ function onStateChange(id, state) {
         default:
             return
     }
-    setTimeout(updateDevices, 800);
+    setTimeout(updateDevices, 800, mac);
+    if (transitionTime*100 > 800) setTimeout(updateDevices, transitionTime*100, mac);
 }
 
 var usedStateNames = {
     type:        { n: 'type',      g:1, val: 0, common: { min: 0, max: 255, write: false }},
     online:      { n: 'reachable', g:1, val: 0, common: { write: false }},
     groupid:     { n: 'groupid',   g:1, val: 0, common: { write: false }},
-    status:      { n: 'on',        g:3, val: false, common: { min: false, max: true }},
-    brightness:  { n: 'bri',       g:1, val: 0, common: { min: 0, max: 100, unit: '%', desc: '0..100%' }},
-    temperature: { n: 'ct',        g:1, val: 0, common: { min: 0, max: 8000, unit: '°K', desc: 'in °Kelvin 0..8000' }},
-    red:         { n: 'r',         g:1, val: 0, common: { min: 0, max: 255 }},
-    green:       { n: 'g',         g:1, val: 0, common: { min: 0, max: 255 }},
-    blue:        { n: 'b',         g:1, val: 0, common: { min: 0, max: 255 }},
-    alpha:       { n: 'sat',       g:1, val: 0, common: { min: 0, max: 255 }},
-    transition:  { n: 'trans',     g:1, val: 30,common: { unit: '\u2152 s', desc: 'in 10th seconds'} },
+    status:      { n: 'on',        g:7, val: false, common: { min: false, max: true }},
+    brightness:  { n: 'bri',       g:3, val: 0, common: { min: 0, max: 100, unit: '%', desc: '0..100%' }},
+    temperature: { n: 'ct',        g:3, val: 0, common: { min: 0, max: 8000, unit: '°K', desc: 'in °Kelvin 0..8000' }},
+    red:         { n: 'r',         g:3, val: 0, common: { min: 0, max: 255 }},
+    green:       { n: 'g',         g:3, val: 0, common: { min: 0, max: 255 }},
+    blue:        { n: 'b',         g:3, val: 0, common: { min: 0, max: 255 }},
+    alpha:       { n: 'sat',       g:3, val: 0, common: { min: 0, max: 255 }},
+    transition:  { n: 'trans',     g:3, val: 30,common: { unit: '\u2152 s', desc: 'in 10th seconds'} },
 
-    command:     { n: 'command',   g:1, val: 'r:0, g:0, b:0, sat:255, on:true, transition:20' }
+    command:     { n: 'command',   g:3, val: 'r:0, g:0, b:0, sat:255, on:true, transition:20' },
+    refresh:     { n: 'refresh',   g:1, val: false, common: { min: false, max: true, desc: 'read states from device' }},
+    rgb:         { n: 'rgb',       g:3, val: '',    common: { desc: '000000..ffffff' }}
+
 };
 
-const LIGHT_GROUP_ROLE = 'LightGroup';
+
+const F_DEVICE = 1,
+      F_GROUP = 2,
+      F_ALL = 4;
+
 function createAll (callback) {
 
     var dev = new devices.CDevice(0, '');
 
-    function create(data, role) {
-        var g = role == LIGHT_GROUP_ROLE ?  2 : 1;
+    function create(data, gFlag) {
         for (var i = 0; i < data.result.length; i++) {
             var device = data.result[i];
-            dev.setDevice(device.name, {common: {name: device.name, role: role}, native: { mac: device.mac, groups: device.groupid } });
+            //dev.setDevice(device.name, {common: {name: device.name, role: gFlag&F_DEVICE?'Device':'Group'}, native: { mac: device.mac, groups: device.groupid } });
+            dev.setDevice(device.mac, {common: {name: device.name, role: gFlag&F_DEVICE?'Device':'Group'}, native: { mac: device.mac, groups: device.groupid } });
             for (var j in usedStateNames) {
-                if (usedStateNames[j].g & g) {
+                if (usedStateNames[j].g & gFlag) {
                     var st = Object.assign({}, usedStateNames[j]);
                     dev.createNew(st.n, st);
                 }
@@ -203,8 +233,8 @@ function createAll (callback) {
     }
 
     lightify.discovery().then(function(data) {
-        create(data, 'light.color');
-        create( {result: [ {mac: 'ffffffffffffffff', name: 'All'}] }, LIGHT_GROUP_ROLE);
+        create(data, F_DEVICE);
+        create( {result: [ {mac: 'FFFFFFFFFFFFFFFF', name: 'All'}] }, F_ALL);
         lightify.zone_discovery().then(function (data) {
             //dev.setDevice('Groups', {common: {name: 'Groups', role: 'Groups'}});
             //for (var i = 0; i < data.result.length; i++) {
@@ -212,39 +242,41 @@ function createAll (callback) {
             //    dev.set(device.name, device.id);
             //}
 
-            //for (var i=0; i<data.result.length; i++) {
-            //    data.result[i].mac = 'G.' + data.result[i].id;
-            //}
-            //create(data, LIGHT_GROUP_ROLE);
-            devices.update(callback);
+            for (var i=0; i<data.result.length; i++) {
+                data.result[i].mac = soef.sprintf('%02x00000000000000', data.result[i].id);
+            }
+            create(data, F_GROUP);
+            //devices.update(callback);
+            dev.update(callback);
         })
     });
 }
 
+function updateDevices (mac) {
 
-function updateDevices () {
-
-    function update(data, g) {
+    function update(data) {
+        var g = 1;
         var dev = new devices.CDevice(0, '');
         for (var i = 0; i < data.result.length; i++) {
             var device = data.result[i];
             if (device.status != undefined) device.status = !!device.status;
-            dev.setDevice(device.name, {common: {name: device.name}});
+            //dev.setDevice(device.name, {common: {name: device.name}});
+            dev.setDevice(device.mac); //, {common: {name: device.name}});
             for (var j in usedStateNames) {
                 if (usedStateNames[j].g & g && device[j] !== undefined) {
                     dev.set(usedStateNames[j].n, device[j]);
                 }
             }
+            dev.set('rgb', soef.sprintf('%02X%02X%02X', device.red, device.green, device.blue, device.alpha));
         }
         dev.update();
     }
 
-    lightify.discovery().then(function(data) {
-        update(data, 1);
-        //lightify.zone_discovery().then(function(data) {
-        //    update(data, 2);
-        //});
-    });
+    if (mac && lightify.get_status != undefined && mac.indexOf('00000000000000') != 2) {
+        lightify.get_status(mac).then(update);
+    } else {
+        lightify.discovery().then(update);
+    }
 }
 
 
@@ -327,23 +359,36 @@ function checkIP(callback) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function normalizeConfig(config) {
+    config.intervall = config.intervall >> 0;
+    config.polling = config.polling ? true : false;
+}
+
 var maxTries = 5;
 var startTimer = null;
 function start() {
     if (maxTries-- <= 0) {
         return;
     }
-    startTimer = setTimeout(start, 500);
-    lightify.start(adapter.config.ip).then(function(data){
+    //startTimer = setTimeout(start, 500);
+    startTimer = setTimeout(start, 1200);
+    lightify.start(adapter.config.ip, function(err) {
+
+    }, false).then(function(){
         if (startTimer) {
             clearTimeout(startTimer);
         }
+        //lightify.get_zone_info('0000000000000001').then(function(err,res) {
+        //xxxlightify.activate_scene(1).then(function(res) {
+        //});
         createAll(poll);
     });
 }
 
 
+
 function main() {
+    normalizeConfig(adapter.config);
     checkIP (function() {
         start();
         adapter.subscribeStates('*');
