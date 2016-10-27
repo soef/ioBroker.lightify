@@ -1,6 +1,6 @@
 {
   "name": "iobroker.lightify",
-  "version": "0.0.20",
+  "version": "0.0.22",
   "description": "OSRAM Lightify Adapter",
   "author": {
     "name": "soef",
@@ -26,8 +26,8 @@
     "url": "https://github.com/soef/iobroker.lightify"
   },
   "dependencies": {
-    "node-lightify-soef": "0.0.8",
-    "soef": "=0.1.9"
+    "node-lightify-soef": "^0.0.10",
+    "soef": "=0.1.12"
   },
   "devDependencies": {},
   "bugs": {

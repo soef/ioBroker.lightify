@@ -1,17 +1,17 @@
 ![Logo](admin/lightify.png)
-#### ioBroker.lightify 
 
+#### ioBroker.lightify 
 ioBroker Adapter for [OSRAM Lightify](http://led.osram.de/led_de/lightify/index.jsp)
 
 #### Info
 The state names are inspired by the Hue adapter.
 
 ###### How to use the command state:
-+ Possible identifiers are: ```red, r, green, g, blue, b, bri, sat, transition, on, off```
++ Possible identifiers are: ``red, r, green, g, blue, b, bri, sat, transition, on, off``
 + The string can be a JSON with or without parentheses. 
 + You can also assign a value by =
 + Range of colors: ```0..255``` 
-+ Range of bri: ```0..100``` 
++ Range of bri: ``0..100`` 
 
 Some Examples:
 ```
