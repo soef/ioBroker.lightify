@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.0.22",
+    "version": "0.0.23",
     "title": "OSRAM Lightify",
     "desc": {
       "en": "OSRAM Lightify Devices",

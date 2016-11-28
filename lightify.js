@@ -17,6 +17,8 @@ var lightify = require('node-lightify-soef');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+var updateTimer = soef.Timer();
 var adapter = soef.Adapter (
     main,
     onStateChange,
@@ -125,7 +127,6 @@ function onStateChange(id, state) {
 
         case 'on':
             lightify.node_on_off(mac, state.val >> 0 ? true : false);
-            //lightify.node_soft_on_off(mac, state.val >> 0 ? true : false, 200);
             break;
         case 'r':
         case 'g':
@@ -291,7 +292,6 @@ function createAll (callback) {
 }
 
 
-
 function updateDevices (mac) {
 
     function update(data) {
@@ -300,7 +300,6 @@ function updateDevices (mac) {
         for (var i = 0; i < data.result.length; i++) {
             var device = data.result[i];
             if (device.status != undefined) device.status = !!device.status;
-            //dev.setDevice(device.mac); //, device.name ? {common: {name: device.name}} : undefined); //, {common: {name: device.name}});
             dev.setChannel(device.mac); //, device.name ? {common: {name: device.name}} : undefined); //, {common: {name: device.name}});
             dev.setName(device.name);
 
@@ -335,7 +334,7 @@ function poll() {
     if (!adapter.config.polling || adapter.config.intervall <= 0) {
         return;
     }
-    setTimeout(poll, adapter.config.intervall*1000);
+    updateTimer.set(poll, adapter.config.intervall*1000);
 }
 
 
@@ -414,28 +413,42 @@ function normalizeConfig(config) {
     config.polling = config.polling ? true : false;
 }
 
-var maxTries = 5;
-var startTimer = null;
-function start() {
-    if (maxTries-- <= 0) {
-        return;
-    }
-    //startTimer = setTimeout(start, 500);
-    startTimer = setTimeout(start, 1200);
-    lightify.start(adapter.config.ip, function(err) {
+var errorCnt = 0;
 
-    }, false).then(function(){
-        if (startTimer) {
-            clearTimeout(startTimer);
+function start() {
+    var oTimeout;
+    
+    function onError (error) {
+        switch (error.errno) { //error.code
+            //case undefined:
+            //    if (error.message != "This socket is closed") return;
+            case 'ETIMEDOUT':
+            case 'ECONNRESET':
+            case 'EPIPE':
+                if (oTimeout) clearTimeout(oTimeout);
+                oTimeout = setTimeout(function() {
+                    start();
+                    //lightify.close();
+                    //lightify.start(adapter.config.ip, onError, false);
+                }, 3000);
+                break;
         }
-        //lightify.get_zone_info('0000000000000001').then(function(err,res) {
-        //xxxlightify.activate_scene(1).then(function(res) {
-        //});
+    }
+
+    updateTimer.clear();
+    lightify.close();
+    lightify.start(adapter.config.ip, onError, false).then(function(){
+        errorCnt = 0;
         createAll(poll);
+    }).catch(function (err) {
+        if (err === "timeout") {
+            setTimeout(start, errorCnt <= 5 ? 1000 : 10000);
+            if (errorCnt++ === 5) {
+                adapter.log.error('Can not connect to Lightify Gateway ' + adapter.config.ip);
+            }
+        }
     });
 }
-
-
 
 
 function main() {
@@ -446,3 +459,10 @@ function main() {
     });
 }
 
+/*
+type  2: SurfaceTW, LIGHTIFY Surface Light Turable White
+tyüe 10: A60RGBW, LIGHTIFY CLA 60 RGBW
+type  4: SurfaceW, LIGHTIFY Surface Light W 28
+ */
+
+//https://api.github.com/repos/soef/node-lightify/tarball/master
