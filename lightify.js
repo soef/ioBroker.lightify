@@ -221,13 +221,13 @@ var usedStateNames = {
 };
 
 
-const F_DEVICE = 1,
-      F_GROUP = 2,
-      F_ALL = 4;
+var F_DEVICE = 1,
+    F_GROUP = 2,
+    F_ALL = 4;
 
-const groupSufix = '00000000000000',
-      _00000000000000 = '00000000000000',
-      groupIdAll = 'FFFFFFFFFFFFFFFF';
+var groupSufix = '00000000000000',
+    _00000000000000 = '00000000000000',
+    groupIdAll = 'FFFFFFFFFFFFFFFF';
 
 function isGroupId(id) {
     if(!id || id.length < groupSufix.length+2) return false;
@@ -345,13 +345,17 @@ function checkIP(callback) {
     }
 
     function saveFoundIP(ip, callback) {
-        adapter.getForeignObject("system.adapter." + adapter.namespace, function (err, obj) {
-            obj.native.ip = ip;
-            adapter.setForeignObject(obj._id, obj, {}, function (err, obj) {
-                adapter.config.ip = ip;
-                callback();
-            });
-        });
+        soef.changeConfig(function(config) {
+            config.ip = ip;
+            adapter.config.ip = ip;
+        }, callback);
+        // adapter.getForeignObject("system.adapter." + adapter.namespace, function (err, obj) {
+        //     obj.native.ip = ip;
+        //     adapter.setForeignObject(obj._id, obj, {}, function (err, obj) {
+        //         adapter.config.ip = ip;
+        //         callback();
+        //     });
+        // });
     }
 
     function getIPAddresses() {
