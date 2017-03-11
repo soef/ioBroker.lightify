@@ -1,7 +1,13 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.0.27",
+    "version": "0.0.28",
+    "news": {
+      "0.0.28": {
+        "en": "possible exception in using command state",
+        "de": "Mögliche Schutzverletung bei der Verwendung des command Datenpunktes"
+      }
+    },
     "title": "OSRAM Lightify",
     "desc": {
       "en": "OSRAM Lightify Devices",

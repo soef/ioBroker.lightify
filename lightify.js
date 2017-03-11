@@ -25,7 +25,7 @@ var adapter = soef.Adapter (
     onUnload,
     onUpdate,
     {
-        name: 'lightify',
+        name: 'lightify'
     }
 );
 
@@ -150,7 +150,8 @@ function onStateChange(id, state) {
             lightify.node_temperature(mac, state.val >> 0, transitionTime);
             break;
         case 'command':
-            var v = state.val.replace(/^on$|red|green|blue|transition|bri|off|#/g, function(match) { return { '#': '#', of:'off:1', on:'on:1', red:'r', green:'g', blue:'b', white: 'w', transition:'x', bri:'l', off:'on:0'}[match] });
+            //var v = state.val.replace(/^on$|red|green|blue|transition|bri|off|#/g, function(match) { return { '#': '#', of:'off:1', on:'on:1', red:'r', green:'g', blue:'b', white: 'w', transition:'x', bri:'l', off:'on:0'}[match] });
+            var v = state.val.replace(/^on$|red|green|blue|transition|bri|off|false|#/g, function(match) { return { 'false': 0, '#': '#', of:'off:1', on:'on:1', red:'r', green:'g', blue:'b', white: 'w', transition:'x', bri:'l', off:'on:0'}[match] });
             v = v.replace(/\s|\"|;$|,$/g, '').replace(/=/g, ':').replace(/;/g, ',').replace(/true/g, 1).replace(/#((\d|[a-f]|[A-F])*)/g, 'h:"$1"').replace(/(r|g|b|w|x|l|sat|of|on|ct|h)/g, '"$1"').replace(/^\{?(.*?)\}?$/, '{$1}');
             try {
                 var colors = JSON.parse(v);
@@ -158,8 +159,9 @@ function onStateChange(id, state) {
                 adapter.log.error("on Command: " + e.message + ': state.val="' + state.val + '"');
                 return;
             }
-            if (colors.h) {
-                var co = parseHexColors('#'+colors.h);
+            if (colors.h !== undefined) {
+                //var co = parseHexColors('#'+colors.h);
+                var co = parseHexColors(colors.h);
                 colors.r = co.r; colors.g = co.g; colors.b = co.b;
                 delete colors.h;
             }
