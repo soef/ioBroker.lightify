@@ -1,6 +1,6 @@
 {
   "name": "iobroker.lightify",
-  "version": "0.0.28",
+  "version": "0.1.5",
   "description": "OSRAM Lightify Adapter",
   "author": {
     "name": "soef",
@@ -26,15 +26,11 @@
     "url": "https://github.com/soef/iobroker.lightify"
   },
   "dependencies": {
-    "node-lightify-soef": "^0.0.11",
-    "soef": "=0.1.12"
+    "mdns-discovery": "^0.1.11",
+    "node-lightify-soef": "^0.2.2",
+    "soef": "^0.2.0"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-replace": "^0.9.3",
-    "grunt-contrib-jshint": "^0.11.2",
-    "grunt-jscs": "^2.0.0",
-    "grunt-http": "^1.6.0",
     "mocha": "^2.3.4",
     "chai": "^3.4.1"
   },
