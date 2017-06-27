@@ -1,6 +1,6 @@
 {
   "name": "iobroker.lightify",
-  "version": "0.1.5",
+  "version": "0.2.1",
   "description": "OSRAM Lightify Adapter",
   "author": {
     "name": "soef",
@@ -23,14 +23,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/soef/iobroker.lightify"
+    "url": "git+https://github.com/soef/iobroker.lightify.git"
   },
   "dependencies": {
-    "mdns-discovery": "^0.1.11",
-    "node-lightify-soef": "^0.2.2",
-    "soef": "^0.2.0"
+    "soef": "^0.4.0",
+    "promise": ">=7.1.1",
+    "moment": ">=2.4.0"
   },
   "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-replace": "^0.9.3",
+    "grunt-contrib-jshint": "^0.11.2",
+    "grunt-jscs": "^2.0.0",
+    "grunt-http": "^1.6.0",
     "mocha": "^2.3.4",
     "chai": "^3.4.1"
   },
@@ -41,5 +46,10 @@
   "main": "lightify.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha"
-  }
+  },
+  "readme": "![Logo](admin/lightify.png)\n\n### ioBroker.lightify \n\n[![NPM version](http://img.shields.io/npm/v/iobroker.lightify.svg)](https://www.npmjs.com/package/iobroker.lightify)\n[![Tests](http://img.shields.io/travis/soef/ioBroker.lightify/master.svg)](https://travis-ci.org/soef/ioBroker.lightify)\n[![Build status](https://ci.appveyor.com/api/projects/status/22g73bivc5vkvdr7?svg=true)](https://ci.appveyor.com/project/soef/iobroker-lightify)\n\n<!--\n[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/soef/iobroker.lightify/blob/master/LICENSE)\n-->\n#### Description\n\nioBroker Adapter for [OSRAM Lightify](http://led.osram.de/led_de/lightify/index.jsp)\n\n#### Info\nThe state names are inspired by the Hue adapter.\n\n###### How to use the command state:\n+ Possible identifiers are: ``red, r, green, g, blue, b, bri, sat, transition, on, off``\n+ The string can be a JSON with or without parentheses. \n+ You can also assign a value by =\n+ Range of colors: ```0..255``` \n+ Range of bri: ``0..100`` \n\nSome Examples:\n```\nr = 100; g = 250, b = 100\nr: 0, g: 0, b = 255\nred: 200, green: 0, blue: 0\n{r:100, b: 200, transition: 20}\noff\non\n{on:0}\n```\nTo change the color you do not have to use all three vallues.\nFor example, ``` red = 0 ```, blue and green will stay unchanged.\n\n#### Requirements\n\n[OSRAM Lightify Gateway][] connected via WLAN to your network.\n\n[OSRAM Lightify Gateway]: http://www.amazon.de/s/ref=nb_sb_noss_1/278-8292784-8078566?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&url=search-alias%3Daps&field-keywords=osram+lightify+gateway&rh=i%3Aaps%2Ck%3Aosram+lightify+gateway\n\n#### Installation\nExecute the following command in the iobroker root directory (e.g. in /opt/iobroker)\n```\nnpm install iobroker.lightify \n```\n<!--\n### License\nThe MIT License (MIT)\n\nCopyright (c) 2016 soef <soef@gmx.net>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n-->",
+  "gitHead": "15d8c174d098cbe146456cd8b1081a1fb87af89b",
+  "_id": "iobroker.lightify@0.1.10",
+  "_shasum": "5b0b99af091f5ac5ed84309d1db248d44f2dc2c3",
+  "_from": "iobroker.lightify@test"
 }

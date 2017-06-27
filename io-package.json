@@ -1,19 +1,16 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.1.5",
+    "version": "0.2.1",
     "news": {
-      "0.1.5": {
-        "en": "added missing file with funtion roundRGB",
-        "de": "fehlende datei mit function roundRGB hinzugefügt"
+      "0.2.1": {
+        "en": "some fixes",
+        "de": "einige Korrekturen"
       },
-      "0.1.4": {
-        "en": "Discovery now via mdns",
-        "de": "Discovery jetzt per mdns"
-      },
-      "0.1.0": {
-        "en": "Change to use version 2.x of node-lightify-soef",
-        "de": "Umstellung auf Version 2.x von node-lightify-soef"
+      "0.2.0": {
+        "en": "refactoring of adapter",
+        "de": "Refaktoring von Adapter",
+        "ru": "Драйвер переработан"
       },
       "0.0.28": {
         "en": "possible exception in using command state",
@@ -23,8 +20,8 @@
     "title": "OSRAM Lightify",
     "desc": {
       "en": "OSRAM Lightify Devices",
-      "de": "OSRAM Lightify Devices",
-      "ru": "OSRAM Lightify Devices"
+      "de": "OSRAM Lightify Geräte",
+      "ru": "OSRAM Lightify Устройства"
     },
     "keywords": [
       "ioBroker",
@@ -36,6 +33,7 @@
     "platform": "Javascript/Node.js",
     "mode": "daemon",
     "icon": "lightify.png",
+    "messagebox": true,
     "extIcon": "https://raw.githubusercontent.com/soef/iobroker.lightify/master/admin/lightify.png",
     "readme": "https://github.com/soef/iobroker.lightify/blob/master/README.md",
     "loglevel": "info",
@@ -45,9 +43,30 @@
   "native": {
     "ip": "",
     "polling": true,
-    "intervall": 60
+    "interval": 60
   },
   "instanceObjects": [
+    {
+      "_id":  "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id":  "info.connection",
+      "type": "state",
+      "common": {
+        "role":  "indicator.connected",
+        "name":  "If connected to CUL",
+        "type":  "boolean",
+        "read":  true,
+        "write": false,
+        "def":   false
+      },
+      "native": {}
+    }
   ],
   "objects": [
   ]
