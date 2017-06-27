@@ -12,6 +12,8 @@
         "de": "Einige Optimierungen und Korrekturen"
       },
       "0.2.2": {
+        "en": "Discovery and browse now via mdns",
+        "de": "Discovery und Browse jetzt per mdns"
       },
       "0.2.1": {
         "en": "some fixes",
