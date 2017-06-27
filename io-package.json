@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "news": {
+      "0.2.5": {
+        "en": "using version 0.2.2 of mnds-discover",
+        "de": "Verwendung der Version 0.2.2 des mnds-discover modules"
+      },
       "0.2.4": {
         "en": "started to optimize zone/group support",
         "de": "Begonnen Zone/Gruppen Unterstützung zu verbessern"
