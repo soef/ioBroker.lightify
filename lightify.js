@@ -7,7 +7,7 @@ Buffer.prototype.writeDoubleLE = function (val/*, pos*/) {
     return this.write(val.toLowerCase(), 0, 8, 'hex');
 };
 Buffer.prototype.readDoubleLE = function (pos, len) {
-    return this.toString('hex', pos, pos + len).toUpperCase();
+    return this.toString('hex', pos, len === undefined ? undefined : pos + len).toUpperCase();
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -302,17 +302,17 @@ var tf = {
 };
 
 var usedStateNames = {
-    type:        {n: 'type',      g: 1, tf: tf.ALL,   val: 0, common: {read: true, min: 0, max: 255, write: false, type: 'number', role: 'state'}},
-    online:      {n: 'reachable', g: 1, tf: tf.ALL,   val: 0, common: {read: true, write: false, type: 'boolean', role: 'indicator.connected'}},
-    groupid:     {n: 'groupid',   g: 1, tf: tf.ALL,   val: 0, common: {read: true, write: false, type: 'string', role: 'state'}},
-    status:      {n: 'on',        g: 7, tf: tf.ALL,   val: false, common: {read: true, write: false, type: 'boolean', role: 'switch'}},
-    brightness:  {n: 'bri',       g: 3, tf: tf.BRI,   val: 0, common: {read: true, write: true, min: 0, max: 100, unit: '%', desc: '0..100%', type: 'number', role: 'level.dimmer'}},
-    temperature: {n: 'ct',        g: 3, tf: tf.CT,    val: 0, common: {read: true, write: true, min: 2700, max: 6500, unit: '°K', desc: 'in °Kelvin 2700..6500', type: 'number', role: 'level.color.temperature'}},
-    red:         {n: 'r',         g: 3, tf: tf.RGB,   val: 0, common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.red'}},
-    green:       {n: 'g',         g: 3, tf: tf.RGB,   val: 0, common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.green'}},
-    blue:        {n: 'b',         g: 3, tf: tf.RGB,   val: 0, common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.blue'}},
-    alpha:       {n: 'sat',       g: 3, tf: tf.RGB,   val: 0, common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.saturation'}},
-    transition:  {n: 'trans',     g: 3, tf: tf.LIGHT, val: 30,common: {read: true, write: false, unit: '\u2152 s', desc: 'in 10th seconds', type: 'number', role: 'state'} },
+    type:        {n: 'type',      g: 1, tf: tf.ALL,   val: 0,     common: {read: true, min: 0, max: 255, write: false, type: 'number', role: 'state'}},
+    online:      {n: 'reachable', g: 1, tf: tf.ALL,   val: 0,     common: {read: true, write: false, type: 'boolean', role: 'indicator.connected'}},
+    groupid:     {n: 'groupid',   g: 1, tf: tf.ALL,   val: 0,     common: {read: true, write: false, type: 'string', role: 'state'}},
+    status:      {n: 'on',        g: 7, tf: tf.ALL,   val: false, common: {read: true, write: true, type: 'boolean', role: 'switch'}},
+    brightness:  {n: 'bri',       g: 3, tf: tf.BRI,   val: 0,     common: {read: true, write: true, min: 0, max: 100, unit: '%', desc: '0..100%', type: 'number', role: 'level.dimmer'}},
+    temperature: {n: 'ct',        g: 3, tf: tf.CT,    val: 0,     common: {read: true, write: true, min: 2700, max: 6500, unit: '°K', desc: 'in °Kelvin 2700..6500', type: 'number', role: 'level.color.temperature'}},
+    red:         {n: 'r',         g: 3, tf: tf.RGB,   val: 0,     common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.red'}},
+    green:       {n: 'g',         g: 3, tf: tf.RGB,   val: 0,     common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.green'}},
+    blue:        {n: 'b',         g: 3, tf: tf.RGB,   val: 0,     common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.blue'}},
+    alpha:       {n: 'sat',       g: 3, tf: tf.RGB,   val: 0,     common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.saturation'}},
+    transition:  {n: 'trans',     g: 3, tf: tf.LIGHT, val: 30,    common: {read: true, write: true, unit: '\u2152 s', desc: 'in 10th seconds', type: 'number', role: 'state'} },
 
     command:     {n: 'command',   g: 3, tf: tf.LIGHT, val: 'r:0, g:0, b:0, sat:255, on:true, transition:20', common: {read: true, write: true, type: 'string', role: 'state'}},
     refresh:     {n: 'refresh',   g: 1, tf: tf.LIGHT, val: false, common: {desc: 'read states from device', type: 'boolean', role: 'button'}},
@@ -401,9 +401,9 @@ function createAll(callback) {
 
         lightify.discoverZone().then(function (data) {
 
-            for (var i = 0; i < data.result.length; i++) {
-                data.result[i].mac = soef.sprintf('%02x00000000000000', data.result[i].id);
-            }
+            // for (var i = 0; i < data.result.length; i++) {
+            //     data.result[i].mac = soef.sprintf('%02x00000000000000', data.result[i].id);
+            // }
             create(data, F_GROUP);
             //devices.update(callback);
             checkDeletedDevices();

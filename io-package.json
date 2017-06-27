@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "news": {
+      "0.2.1": {
+        "en": "some fixes",
+        "de": "einige Korrekturen"
+      },
       "0.2.0": {
         "en": "refactoring of adapter",
         "de": "Refaktoring von Adapter",
