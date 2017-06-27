@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.0.28",
+    "version": "0.1.5",
     "news": {
+      "0.1.5": {
+        "en": "added missing file with funtion roundRGB",
+        "de": "fehlende datei mit function roundRGB hinzugefügt"
+      },
+      "0.1.4": {
+        "en": "Discovery now via mdns",
+        "de": "Discovery jetzt per mdns"
+      },
+      "0.1.0": {
+        "en": "Change to use version 2.x of node-lightify-soef",
+        "de": "Umstellung auf Version 2.x von node-lightify-soef"
+      },
       "0.0.28": {
         "en": "possible exception in using command state",
         "de": "Mögliche Schutzverletung bei der Verwendung des command Datenpunktes"
