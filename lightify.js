@@ -362,7 +362,7 @@ var usedStateNames = {
     alpha:       {n: 'sat',       g: 1, tf: tf.RGB,   val: 0,     common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.saturation'}},
     transition:  {n: 'trans',     g: 3, tf: tf.LIGHT, val: 30,    common: {read: true, write: true, unit: '\u2152 s', desc: 'in 10th seconds', type: 'number', role: 'state'} },
 
-    command:     {n: 'command',   g: 1, tf: tf.LIGHT, val: 'r:0, g:0, b:0, sat:255, on:true, transition:20', common: {read: true, write: true, type: 'string', role: 'state'}},
+    command:     {n: 'command',   g: 3, tf: tf.LIGHT, val: 'r:0, g:0, b:0, sat:255, on:true, transition:20', common: {read: true, write: true, type: 'string', role: 'state'}},
     refresh:     {n: 'refresh',   g: 1, tf: tf.LIGHT, val: false, common: {desc: 'read states from device', type: 'boolean', role: 'button'}},
     rgb:         {n: 'rgb',       g: 1, tf: tf.RGB,   val: '',    common: {desc: '#000000..#ffffff', type: 'string', role: 'level.color.rgb'}}
 
