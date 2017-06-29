@@ -45,7 +45,7 @@
                         } else {
                             text = '<option value="">' + _('Select one') + '</option>';
                             for (var i = 0; i < list.length; i++) {
-                                text += '<option value="' + list[i] + '">' + list[i] + '</option>';
+                                text += '<option value="' + list[i].ip + '">' + list[i].ip + '</option>';
                             }
                         }
                         $('#found').html(text).show();
