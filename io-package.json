@@ -1,9 +1,37 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.1.0",
+    "version": "0.2.7",
     "news": {
-      "0.1.0": {
+      "0.2.7": {
+        "en": "small changes",
+        "de": "Kleine Anpassungen",
+        "ru": "Небольшие изменения"
+      },
+      "0.2.6": {
+        "en": "command state added to group/zone devices",
+        "de": "command Datenpunkt für Gruppen/Zone Geräte hinzugefügt"
+      },      "0.2.5": {
+        "en": "using version 0.2.2 of mnds-discover",
+        "de": "Verwendung der Version 0.2.2 des mnds-discover modules"
+      },
+      "0.2.4": {
+        "en": "started to optimize zone/group support",
+        "de": "Begonnen Zone/Gruppen Unterstützung zu verbessern"
+      },
+      "0.2.3": {
+        "en": "Some optimizations and corrections",
+        "de": "Einige Optimierungen und Korrekturen"
+      },
+      "0.2.2": {
+        "en": "Discovery and browse now via mdns",
+        "de": "Discovery und Browse jetzt per mdns"
+      },
+      "0.2.1": {
+        "en": "some fixes",
+        "de": "einige Korrekturen"
+      },
+      "0.2.0": {
         "en": "refactoring of adapter",
         "de": "Refaktoring von Adapter",
         "ru": "Драйвер переработан"

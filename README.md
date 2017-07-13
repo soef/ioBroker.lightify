@@ -5,8 +5,10 @@
 [![NPM version](http://img.shields.io/npm/v/iobroker.lightify.svg)](https://www.npmjs.com/package/iobroker.lightify)
 [![Tests](http://img.shields.io/travis/soef/ioBroker.lightify/master.svg)](https://travis-ci.org/soef/ioBroker.lightify)
 [![Build status](https://ci.appveyor.com/api/projects/status/22g73bivc5vkvdr7?svg=true)](https://ci.appveyor.com/project/soef/iobroker-lightify)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/soef/iobroker.lightify/blob/master/LICENSE)
 
+<!--
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/soef/iobroker.lightify/blob/master/LICENSE)
+-->
 ## Description
 ioBroker Adapter for [OSRAM Lightify](http://led.osram.de/led_de/lightify/index.jsp)
 
@@ -41,7 +43,25 @@ For example, ``` red = 0 ```, blue and green will stay unchanged.
 Please configure first all devices via Lightify app.
 
 ## Changelog
-### 0.1.0 (2017.06.15)
+### 0.2.7 (2017.07.13)
+* (bluefox) small changes
+
+### 0.2.6 
+* (soef) command state added to group/zone devices
+
+### 0.2.5 
+* (soef) using version 0.2.2 of mnds-discover
+
+### 0.2.4 
+* (soef) started to optimize zone/group support
+
+### 0.2.2 
+* (soef) Discovery and browse now via mdns
+
+### 0.2.0 
+* (soef) refactoring of adapter
+
+### 0.1.0
 * (bluefox) refactoring
 
 ## License
