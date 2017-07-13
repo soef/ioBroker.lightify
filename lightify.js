@@ -535,7 +535,7 @@ function browseMdns(callback) {
         returnOnFirstFound: true,
         name: '_http._tcp.local',
         find: 'Lightify',
-        broadcast:false
+        broadcast: false
     });
     mdns.run(callback);
 }
