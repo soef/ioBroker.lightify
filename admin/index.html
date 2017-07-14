@@ -15,6 +15,9 @@
 <script type="text/javascript">
 
     function load(settings, onChange) {
+        if (settings.interval === undefined && settings.intervall) settings.interval = settings.intervall;
+        settings.interval = settings.interval || 60;
+
         for (var key in settings) {
             if (!settings.hasOwnProperty(key)) continue;
 
@@ -45,7 +48,11 @@
                         } else {
                             text = '<option value="">' + _('Select one') + '</option>';
                             for (var i = 0; i < list.length; i++) {
-                                text += '<option value="' + list[i].ip + '">' + list[i].ip + '</option>';
+                                if (list[i].ip) {
+                                    text += '<option value="' + list[i].ip + '">' + list[i].ip + '</option>';
+                                } else {
+                                    text += '<option value="' + list[i] + '">' + list[i] + '</option>';
+                                }
                             }
                         }
                         $('#found').html(text).show();
@@ -112,17 +119,17 @@
 
 <div id="adapter-container" style="padding-left: 6px; padding-right: 0px; width: 97%;">
 
-    <table>
+    <table><tr>
         <td><img src="lightify.png" /></td>
         <td style="padding-top: 20px;padding-left: 10px"><h3 class="translate">OSRAM Lightify adapter settings</h3></td>
-    </table>
+    </tr></table>
 
     <h1 class="translate">Settings</h1>
 
     <table>
         <tr><td><label class="translate" for="ip">ip</label></td><td><input id="ip" class="value" style="display: inline-block"/><button id="browse" disabled  style="display: inline-block;"></button><select id="found" style="display: none;"></select></td></tr>
         <tr><td><label class="translate" for="polling">polling</label></td><td><input type='checkbox' class="value" id="polling" size="20" /></td></tr>
-        <tr><td><label class="translate" for="intervall">intervall</label></td><td><input class="value" id="intervall" size="20" /></td></tr>
+        <tr><td><label class="translate" for="interval">interval</label></td><td><input class="value" id="interval" size="20" /></td></tr>
     </table>
 </div>
 

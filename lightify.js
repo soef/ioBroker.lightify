@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // patch node-lightify to get & set the mac-value as hex string
 
-Buffer.prototype.writeDoubleLE = function (val/*, pos*/) {
+Buffer.prototype.writeDoubleLE = function (val /*, pos*/) {
     return this.write(val.toLowerCase(), 0, 8, 'hex');
 };
 Buffer.prototype.readDoubleLE = function (pos, len) {
@@ -12,8 +12,10 @@ Buffer.prototype.readDoubleLE = function (pos, len) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var soef = require('soef');
+// BF colorsModule unused
 var colorsModule = require(__dirname + '/lib/colors');
 var Lightify = require(__dirname + '/lib/lightify');//require('node-lightify-soef');
+var net;
 var lightify;
 var types = {};
 var connected = false;
@@ -66,7 +68,7 @@ adapter.on('message', function (obj) {
             browse(function (list) {
                 adapter.sendTo(obj.from, obj.command, list, obj.callback);
             });
-            break;
+        break;
     }
 });
 
@@ -99,6 +101,7 @@ function getState(id) {
     return o.val || 0;
 }
 
+// BF Function unused
 function getBrightness(co) {
     //var bri = (co.r * 299 + co.g * 587 + co.b*114) / 2560;
     var bri = (co.r + co.g + co.b) * 100 / (256 + 256 + 256);
@@ -130,7 +133,7 @@ function parseHexColors(val) {
         for (var i in co) {
             co[i] *= m;
         }
-        roundRGB(co);
+        colorsModule.roundRGB(co);
     }
     return co;
 }
@@ -188,7 +191,7 @@ function onStateChange(id, state) {
         devices.setrawval(id, val);
         adapter.setState(id, val, true);
     }
-    
+
     devices.invalidate(id);
 
     switch (stateName) {
@@ -197,11 +200,13 @@ function onStateChange(id, state) {
             
             // go through all devices and set trans to this value
             //if (id === adapter.namespace + '.' + groupIdAll + '.' + usedStateNames.transition.n) {
-            if (o.native && o.native.devices) toArr(o.native.devices).forEach(function(did) {
-                var fullId = dcs(did, 'trans');
-                devices.setrawval(fullId, state.val);
-                adapter.setState(fullId, state.val, true);
-            }); else if (mac === groupIdAll) {
+            if (o.native && o.native.devices) {
+                toArr(o.native.devices).forEach(function(did) {
+                    var fullId = dcs(did, 'trans');
+                    devices.setrawval(fullId, state.val);
+                    adapter.setState(fullId, state.val, true);
+                });
+            } else if (mac === groupIdAll) {
                 devices.foreach('*.trans', function (id) {
                     devices.setrawval(id, state.val);
                     adapter.setState(id, state.val, true);
@@ -349,12 +354,12 @@ var tf = {
 };
 
 var usedStateNames = {
-    type:        {n: 'type',      g: 1, tf: tf.ALL,   val: 0,     common: {read: true, min: 0, max: 255, write: false, type: 'number', role: 'state'}},
-    online:      {n: 'reachable', g: 1, tf: tf.ALL,   val: 0,     common: {read: true, write: false, type: 'boolean', role: 'indicator.connected'}},
-    groupid:     {n: 'groupid',   g: 1, tf: tf.ALL,   val: 0,     common: {read: true, write: false, type: 'string', role: 'state'}},
+    type:        {n: 'type',      g: 1, tf: tf.ALL,   val: 0, common: {read: true, min: 0, max: 255, write: false, type: 'number', role: 'state'}},
+    online:      {n: 'reachable', g: 1, tf: tf.ALL,   val: 0, common: {read: true, write: false, type: 'boolean', role: 'indicator.connected'}},
+    groupid:     {n: 'groupid',   g: 1, tf: tf.ALL,   val: 0, common: {read: true, write: false, type: 'string', role: 'state'}},
     status:      {n: 'on',        g: 7, tf: tf.ALL,   val: false, common: {read: true, write: true, type: 'boolean', role: 'switch'}},
     //statusSoft:  { n: 'softOn',    g:7, tf: tf.ALL,   val: false, common: { min: false, max: true }},
-    brightness:  {n: 'bri',       g: 3, tf: tf.BRI,   val: 0,     common: {read: true, write: true, min: 0, max: 100, unit: '%', desc: '0..100%', type: 'number', role: 'level.dimmer'}},
+    brightness:  {n: 'bri',       g: 3, tf: tf.BRI,   val: 0, common: {read: true, write: true, min: 0, max: 100, unit: '%', desc: '0..100%', type: 'number', role: 'level.dimmer'}},
     temperature: {n: 'ct',        g: 1, tf: tf.CT,    val: 0,     common: {read: true, write: true, min: 2700, max: 6500, unit: '°K', desc: 'in °Kelvin 2700..6500', type: 'number', role: 'level.color.temperature'}},
     red:         {n: 'r',         g: 1, tf: tf.RGB,   val: 0,     common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.red'}},
     green:       {n: 'g',         g: 1, tf: tf.RGB,   val: 0,     common: {read: true, write: true, min: 0, max: 255, type: 'number', role: 'level.color.green'}},
@@ -367,7 +372,6 @@ var usedStateNames = {
     rgb:         {n: 'rgb',       g: 1, tf: tf.RGB,   val: '',    common: {desc: '#000000..#ffffff', type: 'string', role: 'level.color.rgb'}}
 
 };
-
 
 var F_DEVICE = 1;
 var F_GROUP  = 2;
@@ -524,19 +528,105 @@ function poll() {
     updateTimer.set(poll, adapter.config.interval * 1000);
 }
 
-
-function browse(callback) {
+function browseMdns(callback) {
     var Mdns = require('mdns-discovery');
     var mdns = new Mdns({
         timeout: 3,
         returnOnFirstFound: true,
         name: '_http._tcp.local',
         find: 'Lightify',
-        broadcast:false
+        broadcast: false
     });
     mdns.run(callback);
 }
 
+function browseIp(callback) {
+    var ips = getIPAddresses();
+    var result = [];
+    if (!ips.length) {
+        return callback && callback([]);
+    }
+    var count = 0;
+    ips.forEach(function (ownIP) {
+        var prefixIP = ownIP.split('.', 3).join('.') + '.';
+        adapter.log.info('Own IP: ' + ownIP + ' Range: ' + prefixIP + '1...255');
+        for (var i = 0; i < 255; i++) {
+            count++;
+            tryIp(prefixIP + i, function (foundIp) {
+                if (foundIp) {
+                    result.push(foundIp);
+                }
+                if (!--count && callback) {
+                    callback(result);
+                }
+            });
+        }
+    });
+}
+
+function getIPAddresses() {
+    // found on stackOverflow
+    var ips = [];
+    var interfaces = require('os').networkInterfaces();
+    for (var devName in interfaces) {
+        if (!interfaces.hasOwnProperty(devName)) continue;
+
+        var iface = interfaces[devName];
+
+        for (var i = 0; i < iface.length; i++) {
+            var alias = iface[i];
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                ips.push(alias.address);
+            }
+        }
+    }
+    return ips;
+}
+
+function tryIp(ip, cb) {
+    net = net || require('net');
+
+    var client = new net.Socket();
+    client.setTimeout(1000, function () {
+        try {
+            client.destroy();
+        } catch (e) {
+
+        }
+        cb(null);
+    });
+
+    client.on('data', function (data) {
+    });
+
+    client.on('error', function (error) {
+        try {
+            client.destroy();
+        } catch (e) {
+
+        }
+        cb(null);
+    });
+
+    client.on('connect', function () {
+        try {
+            client.end();
+        } catch (e) {
+
+        }
+        cb(ip);
+    });
+    client.connect(4000, ip, function () {
+    });
+}
+
+function browse(callback) {
+    try {
+        browseMdns(callback);
+    } catch (e) {
+        browseIp(callback);
+    }
+}
 
 function checkIP(callback) {
     if (adapter.config.ip) {
@@ -584,6 +674,7 @@ function onError(error) {
         setConnectionState(false);
     }
 }
+
 function onConnectError(err) {
     if (err === 'connect timeout') {
         setTimeout(start, errorCnt <= 5 ? 1000 : 10000);
