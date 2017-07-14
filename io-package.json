@@ -1,13 +1,17 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "news": {
+      "0.2.7": {
+        "en": "small changes",
+        "de": "Kleine Anpassungen",
+        "ru": "Небольшие изменения"
+      },
       "0.2.6": {
         "en": "command state added to group/zone devices",
         "de": "command Datenpunkt für Gruppen/Zone Geräte hinzugefügt"
-      },
-      "0.2.5": {
+      },      "0.2.5": {
         "en": "using version 0.2.2 of mnds-discover",
         "de": "Verwendung der Version 0.2.2 des mnds-discover modules"
       },

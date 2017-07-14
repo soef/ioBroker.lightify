@@ -9,9 +9,9 @@ systemDictionary = {
         "en": 'IP of the Gateway',
         "ru": "Адрес шлюза Lightify"
     },
-    "intervall": {
+    "interval": {
         "de": 'Polling Intervall in Sek.',
-        "en": 'Polling intervall in sec.',
+        "en": 'Polling interval in sec.',
         "ru": "Интервал опроса в секундах"
     },
     "polling": {
