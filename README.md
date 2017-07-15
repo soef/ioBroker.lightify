@@ -43,7 +43,7 @@ For example, ``` red = 0 ```, blue and green will stay unchanged.
 Please configure first all devices via Lightify app.
 
 ## Changelog
-### 0.2.7 (2017.07.13)
+### 0.2.8 (2017.07.15)
 * (bluefox) small changes
 
 ### 0.2.6 
