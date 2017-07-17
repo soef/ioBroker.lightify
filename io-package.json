@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.2.9",
+    "version": "0.2.10",
     "news": {
+      "0.2.10": {
+        "en": "fixed adapter load for newer/younger utils.js versions",
+        "de": "Laden des adapters für neue/alte utils Versionen korrigiert"
+      },
       "0.2.9": {
         "en": "version for soef set to 0.4.4",
         "de": "Version für soef auf to 0.4.4 gesetzt"
