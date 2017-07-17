@@ -1,9 +1,13 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.2.7",
+    "version": "0.2.9",
     "news": {
-      "0.2.7": {
+      "0.2.9": {
+        "en": "version for soef set to 0.4.4",
+        "de": "Version für soef auf to 0.4.4 gesetzt"
+      },
+      "0.2.8": {
         "en": "small changes",
         "de": "Kleine Anpassungen",
         "ru": "Небольшие изменения"
