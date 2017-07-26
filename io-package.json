@@ -1,8 +1,13 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.2.10",
+    "version": "0.2.11",
     "news": {
+      "0.2.11": {
+        "en": "fix of the discovery packet",
+        "de": "Korrigiere Discovery Packet",
+        "ru": "Исправлен пакет discovery"
+      },
       "0.2.10": {
         "en": "fixed adapter load for newer/younger utils.js versions",
         "de": "Laden des adapters für neue/alte utils Versionen korrigiert"
