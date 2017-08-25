@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "lightify",
-    "version": "0.2.11",
+    "version": "0.2.12",
     "news": {
+      "0.2.12": {
+        "en": "Enhance CI testing",
+        "de": "CI testing erweitert"
+      },
       "0.2.11": {
         "en": "fix of the discovery packet",
         "de": "Korrigiere Discovery Packet",
