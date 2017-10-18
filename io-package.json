@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "lightify",
-        "version": "0.2.14",
+        "version": "0.2.15",
         "news": {
+            "0.2.15": {
+                "en": "update basic package-file testing (Apollon77)",
+                "de": "Erweiterung der Tests (Apollon77)"
+            },
             "0.2.14": {
                 "en": "node 0.12 removed from testing",
                 "de": "node 0.12 auf testing entfernt"
