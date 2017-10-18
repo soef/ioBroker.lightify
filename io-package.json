@@ -1,118 +1,124 @@
 {
-  "common": {
-    "name": "lightify",
-    "version": "0.2.14",
-    "news": {
-      "0.2.14": {
-        "en": "node 0.12 removed from testing",
-        "de": "node 0.12 auf testing entfernt"
-      },
-      "0.2.12": {
-        "en": "Enhance CI testing",
-        "de": "CI testing erweitert"
-      },
-      "0.2.11": {
-        "en": "fix of the discovery packet",
-        "de": "Korrigiere Discovery Packet",
-        "ru": "Исправлен пакет discovery"
-      },
-      "0.2.10": {
-        "en": "fixed adapter load for newer/younger utils.js versions",
-        "de": "Laden des adapters für neue/alte utils Versionen korrigiert"
-      },
-      "0.2.9": {
-        "en": "version for soef set to 0.4.4",
-        "de": "Version für soef auf to 0.4.4 gesetzt"
-      },
-      "0.2.8": {
-        "en": "small changes",
-        "de": "Kleine Anpassungen",
-        "ru": "Небольшие изменения"
-      },
-      "0.2.6": {
-        "en": "command state added to group/zone devices",
-        "de": "command Datenpunkt für Gruppen/Zone Geräte hinzugefügt"
-      },      "0.2.5": {
-        "en": "using version 0.2.2 of mnds-discover",
-        "de": "Verwendung der Version 0.2.2 des mnds-discover modules"
-      },
-      "0.2.4": {
-        "en": "started to optimize zone/group support",
-        "de": "Begonnen Zone/Gruppen Unterstützung zu verbessern"
-      },
-      "0.2.3": {
-        "en": "Some optimizations and corrections",
-        "de": "Einige Optimierungen und Korrekturen"
-      },
-      "0.2.2": {
-        "en": "Discovery and browse now via mdns",
-        "de": "Discovery und Browse jetzt per mdns"
-      },
-      "0.2.1": {
-        "en": "some fixes",
-        "de": "einige Korrekturen"
-      },
-      "0.2.0": {
-        "en": "refactoring of adapter",
-        "de": "Refaktoring von Adapter",
-        "ru": "Драйвер переработан"
-      },
-      "0.0.28": {
-        "en": "possible exception in using command state",
-        "de": "Mögliche Schutzverletung bei der Verwendung des command Datenpunktes"
-      }
+    "common": {
+        "name": "lightify",
+        "version": "0.2.14",
+        "news": {
+            "0.2.14": {
+                "en": "node 0.12 removed from testing",
+                "de": "node 0.12 auf testing entfernt"
+            },
+            "0.2.12": {
+                "en": "Enhance CI testing",
+                "de": "CI testing erweitert"
+            },
+            "0.2.11": {
+                "en": "fix of the discovery packet",
+                "de": "Korrigiere Discovery Packet",
+                "ru": "Исправлен пакет discovery"
+            },
+            "0.2.10": {
+                "en": "fixed adapter load for newer/younger utils.js versions",
+                "de": "Laden des adapters für neue/alte utils Versionen korrigiert"
+            },
+            "0.2.9": {
+                "en": "version for soef set to 0.4.4",
+                "de": "Version für soef auf to 0.4.4 gesetzt"
+            },
+            "0.2.8": {
+                "en": "small changes",
+                "de": "Kleine Anpassungen",
+                "ru": "Небольшие изменения"
+            },
+            "0.2.6": {
+                "en": "command state added to group/zone devices",
+                "de": "command Datenpunkt für Gruppen/Zone Geräte hinzugefügt"
+            },
+            "0.2.5": {
+                "en": "using version 0.2.2 of mnds-discover",
+                "de": "Verwendung der Version 0.2.2 des mnds-discover modules"
+            },
+            "0.2.4": {
+                "en": "started to optimize zone/group support",
+                "de": "Begonnen Zone/Gruppen Unterstützung zu verbessern"
+            },
+            "0.2.3": {
+                "en": "Some optimizations and corrections",
+                "de": "Einige Optimierungen und Korrekturen"
+            },
+            "0.2.2": {
+                "en": "Discovery and browse now via mdns",
+                "de": "Discovery und Browse jetzt per mdns"
+            },
+            "0.2.1": {
+                "en": "some fixes",
+                "de": "einige Korrekturen"
+            },
+            "0.2.0": {
+                "en": "refactoring of adapter",
+                "de": "Refaktoring von Adapter",
+                "ru": "Драйвер переработан"
+            },
+            "0.0.28": {
+                "en": "possible exception in using command state",
+                "de": "Mögliche Schutzverletung bei der Verwendung des command Datenpunktes"
+            }
+        },
+        "title": "OSRAM Lightify",
+        "desc": {
+            "en": "OSRAM Lightify Devices",
+            "de": "OSRAM Lightify Geräte",
+            "ru": "OSRAM Lightify Устройства"
+        },
+        "keywords": [
+            "ioBroker",
+            "osram",
+            "lightify",
+            "zigbee",
+            "hue"
+        ],
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "icon": "lightify.png",
+        "messagebox": true,
+        "extIcon": "https://raw.githubusercontent.com/soef/iobroker.lightify/master/admin/lightify.png",
+        "readme": "https://github.com/soef/iobroker.lightify/blob/master/README.md",
+        "loglevel": "info",
+        "type": "lighting",
+        "enabled": true,
+        "authors": [
+            {
+                "name": "soef",
+                "email": "soef@gmx.net"
+            }
+        ]
     },
-    "title": "OSRAM Lightify",
-    "desc": {
-      "en": "OSRAM Lightify Devices",
-      "de": "OSRAM Lightify Geräte",
-      "ru": "OSRAM Lightify Устройства"
+    "native": {
+        "ip": "",
+        "polling": true,
+        "interval": 60
     },
-    "keywords": [
-      "ioBroker",
-      "osram",
-      "lightify",
-      "zigbee",
-      "hue"
+    "instanceObjects": [
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "If connected to CUL",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        }
     ],
-    "platform": "Javascript/Node.js",
-    "mode": "daemon",
-    "icon": "lightify.png",
-    "messagebox": true,
-    "extIcon": "https://raw.githubusercontent.com/soef/iobroker.lightify/master/admin/lightify.png",
-    "readme": "https://github.com/soef/iobroker.lightify/blob/master/README.md",
-    "loglevel": "info",
-    "type": "hardware",
-    "enabled": true
-  },
-  "native": {
-    "ip": "",
-    "polling": true,
-    "interval": 60
-  },
-  "instanceObjects": [
-    {
-      "_id":  "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id":  "info.connection",
-      "type": "state",
-      "common": {
-        "role":  "indicator.connected",
-        "name":  "If connected to CUL",
-        "type":  "boolean",
-        "read":  true,
-        "write": false,
-        "def":   false
-      },
-      "native": {}
-    }
-  ],
-  "objects": [
-  ]
+    "objects": []
 }
