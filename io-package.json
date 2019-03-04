@@ -84,6 +84,7 @@
             "zigbee",
             "hue"
         ],
+        "license": "MIT",
         "platform": "Javascript/Node.js",
         "mode": "daemon",
         "icon": "lightify.png",
