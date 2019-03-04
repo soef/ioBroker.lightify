@@ -31,7 +31,8 @@
   "dependencies": {
     "soef": "^0.4.6",
     "promise": ">=7.1.1",
-    "moment": ">=2.4.0"
+    "moment": ">=2.4.0",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
